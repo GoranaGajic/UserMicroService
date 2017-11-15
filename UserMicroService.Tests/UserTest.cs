@@ -31,7 +31,102 @@ namespace UserMicroService.Tests
         }
 
         [Test]
-        public 
+        public void RemoveUserSuccess()
+        {
+            ClearUsers();
+            User testUser = new User
+            {
+                Id = 1,
+                Name = "Milica"
+            };
+
+            UserDB.AddNewUser(testUser);
+            UserDB.DeleteUser(testUser.Id);
+            Assert.AreEqual(0, UserDB.listOfUsers.Count);
+
+        }
+
+        [Test]
+        public void RemoveUserFail()
+        {
+            ClearUsers();
+            User testUser = new User
+            {
+                Id = 1,
+                Name = "Milica"
+            };
+
+            UserDB.AddNewUser(testUser);
+            UserDB.DeleteUser(3);
+            Assert.AreEqual(1, UserDB.listOfUsers.Count);
+
+        }
+
+        [Test]
+
+        public void GetAllUsersSuccess()
+        {
+            ClearUsers();
+
+            User testUser1 = new User
+            {
+                Id = 1,
+                Name = "Tijana"
+            };
+
+            User testUser2 = new User
+            {
+                Id = 2,
+                Name = "Milan"
+            };
+
+            User testUser3 = new User
+            {
+                Id = 3,
+                Name = "Nevena"
+            };
+
+            User testUser4 = new User
+            {
+                Id = 4,
+                Name = "Marko"
+            };
+
+            UserDB.AddNewUser(testUser1);
+            UserDB.AddNewUser(testUser2);
+            UserDB.AddNewUser(testUser3);
+            UserDB.AddNewUser(testUser4);
+            Assert.AreEqual(4, UserDB.GetAllUsers().Count);
+        }
+        [Test]
+        public void GetUserByName()
+        {
+            ClearUsers();
+            User testUser = new User
+            {
+                Id = 1,
+                Name = "Tijana"
+            };
+            UserDB.AddNewUser(testUser);
+            Assert.AreEqual(testUser, UserDB.GetUserByName("Tijana" ));
+
+        }
+
+
+
+        [Test]
+
+        public void GetUserByIdSuccess()
+        {
+            ClearUsers();
+            User testUser = new User
+            {
+                Id=1,
+                Name="Tijana"
+            };
+            UserDB.AddNewUser(testUser);
+            Assert.AreEqual(testUser, UserDB.GetUserById(1));
+        }
 
     }
 }

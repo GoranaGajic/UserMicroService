@@ -66,8 +66,33 @@ namespace UserMicroService.DataAccess
                 listOfUsers.Remove(deleteUser);
             }
 
-            //modifikacija
+        //modifikacija
+        public static User CreateNewUser(int id, string name, string email, string adresa, string zipCode, string cityName, string countryName, string phone)
+        {
+            User user = new User();
+            user.Id = id;
+            user.Name = name;
+            user.Email = email;
+            user.Adresa = adresa;
+            user.ZipCode = zipCode;
+            user.CityName = cityName;
+            user.CountryName = countryName;
+            user.Phone = phone;
 
+            return user;
+        }
+
+        //modifikovanje korisnika
+        public static User ModifyUser(int id, string name, string email, string adresa, string zipCode, string cityName, string countryName, string phone)
+        {
+            User user = CreateNewUser(id, name, email, adresa, zipCode, cityName, countryName, phone);
+            DeleteUser(id);
+            AddNewUser(user);
+
+            return user;
+        }
+    }
+}
         }
     }
 
