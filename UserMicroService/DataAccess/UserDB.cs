@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Data.SqlClient;
+using System.Data;
+using System.Diagnostics;
 using UserMicroService.Models;
 using UserMicroService.Util;
 
@@ -9,92 +12,54 @@ namespace UserMicroService.DataAccess
 {
     public static class UserDB
     {
-
-        //lista svih usera
-        public static List<User> listOfUsers = new List<User>();
-
-        //svi useri
-        public static List<User> GetAllUsers()
+        public static User ReadDBRow(SqlDataReader reader) //iscitavanje iz baze
         {
-            return listOfUsers;
+            User retVal = new User();
+
+            retVal.Id = (int)reader["Id"];
+            retVal.Name = reader["Name"] as string;
+            retVal.Email = reader["Email"] as string;
+
+            return retVal;
         }
 
-        //user po id
-        public static User GetUserById (int id)
+        public static User GetUserById(int Id)
         {
-            foreach (User user in listOfUsers)
+            try
             {
-                if (user.Id == id)
+                User userToReturn = new User(); //model praznog usera koji kasnije popunjavamo 
+                using (SqlConnection connection=new SqlConnection(DBFunctions.ConnectionString)) //koji server i koja baza
                 {
-                    return user;
+                    SqlCommand command = connection.CreateCommand();
+                    command.CommandText = String.Format(@"
+                        SELECT *
+                        FROM [user].[User]
+                        WHERE [Id]=@Id 
+                    "); //@id je SQL parametar
+
+                    command.Parameters.Add("@Id",SqlDbType.Int);
+                    command.Parameters["@Id"].Value = Id;
+
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader()) //upit nad bazom
+                    {
+                        if (reader.Read())
+                        {
+                            userToReturn = ReadDBRow(reader); //metoda koja vraca usera 1 po id
+                        }
+                    }
                 }
+                return userToReturn;
+
             }
-            return null;
-        }
-            //dodavanje novog
-            public static User AddNewUser(User user)
+            catch (Exception ex)
             {
-                listOfUsers.Add(user);
-                return user;
+                Debug.WriteLine(ex);
+                throw ex;
             }
-
-        //vracanje po imenu
-
-        public static List<User> GetUserByName(string Name)
-        {
-            List<User> userByName = new List<User>();
-            foreach (User user in listOfUsers)
-            {
-                if (user.Name.Equals(Name))
-                {
-
-                    userByName.Add(user);
-                }
-            }
-
-            if (userByName.Count > 0)
-            {
-                return userByName;
-            }
-            return null;
-        }
-
-            //brisanje korisnika po id
-            public static void DeleteUser(int Id)
-            {
-                User deleteUser = GetUserById(Id);
-                listOfUsers.Remove(deleteUser);
-            }
-
-        //modifikacija
-        public static User CreateNewUser(int id, string name, string email, string adresa, string zipCode, string cityName, string countryName, string phone)
-        {
-            User user = new User();
-            user.Id = id;
-            user.Name = name;
-            user.Email = email;
-            user.Adresa = adresa;
-            user.ZipCode = zipCode;
-            user.CityName = cityName;
-            user.CountryName = countryName;
-            user.Phone = phone;
-
-            return user;
-        }
-
-        //modifikovanje korisnika
-        public static User ModifyUser(int id, string name, string email, string adresa, string zipCode, string cityName, string countryName, string phone)
-        {
-            User user = CreateNewUser(id, name, email, adresa, zipCode, cityName, countryName, phone);
-            DeleteUser(id);
-            AddNewUser(user);
-
-            return user;
         }
     }
 }
-        }
-    }
 
         
     

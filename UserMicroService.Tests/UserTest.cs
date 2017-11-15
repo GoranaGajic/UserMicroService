@@ -12,7 +12,7 @@ namespace UserMicroService.Tests
 {
     public class UserTest
     {
-    
+     /*
         public void ClearUsers() {
             UserDB.listOfUsers.Clear();
         }
@@ -127,6 +127,7 @@ namespace UserMicroService.Tests
             UserDB.AddNewUser(testUser);
             Assert.AreEqual(testUser, UserDB.GetUserById(1));
         }
+        */
 
     }
 }
